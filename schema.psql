@@ -562,3 +562,16 @@ CREATE POLICY tenant_isolation_policy ON restaurant_order_item_variants
   USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::int);
 ALTER TABLE restaurant_order_item_variants ALTER COLUMN tenant_id SET DEFAULT NULLIF(current_setting('app.current_tenant_id', true), '')::int;
 
+
+ - -   M u l t i - t e n a n t   o p t i m i z a t i o n   i n d e x e s 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ i t e m s _ t e n a n t   O N   r e s t a u r a n t _ i t e m s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ c a t e g o r i e s _ t e n a n t   O N   r e s t a u r a n t _ c a t e g o r i e s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ o r d e r s _ t e n a n t   O N   r e s t a u r a n t _ o r d e r s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ r e v i e w s _ t e n a n t   O N   r e s t a u r a n t _ r e v i e w s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ o f f e r s _ t e n a n t   O N   r e s t a u r a n t _ o f f e r s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ u s e r s _ t e n a n t   O N   r e s t a u r a n t _ u s e r s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ c u s t o m e r s _ t e n a n t   O N   r e s t a u r a n t _ c u s t o m e r s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ s u p p o r t _ t i c k e t s _ t e n a n t   O N   r e s t a u r a n t _ s u p p o r t _ t i c k e t s ( t e n a n t _ i d ) ; 
+ C R E A T E   I N D E X   I F   N O T   E X I S T S   i d x _ r e s t a u r a n t _ c o n t a c t _ t i c k e t s _ t e n a n t   O N   r e s t a u r a n t _ c o n t a c t _ t i c k e t s ( t e n a n t _ i d ) ; 
+  
+ 

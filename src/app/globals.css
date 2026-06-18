@@ -1,16 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
+:root {
+  --theme-base: #ec4899;
+}
 
 @theme {
-  --color-primary-50: #fdf2f8;
-  --color-primary-100: #fce7f3;
-  --color-primary-200: #fbcfe8;
-  --color-primary-300: #f9a8d4;
-  --color-primary-400: #f472b6;
-  --color-primary-500: #ec4899;
-  --color-primary-600: #db2777;
-  --color-primary-700: #be185d;
-  --color-primary-800: #9d174d;
-  --color-primary-900: #831843;
+  --color-pink-50: color-mix(in srgb, var(--theme-base) 10%, white);
+  --color-pink-100: color-mix(in srgb, var(--theme-base) 20%, white);
+  --color-pink-200: color-mix(in srgb, var(--theme-base) 40%, white);
+  --color-pink-300: color-mix(in srgb, var(--theme-base) 60%, white);
+  --color-pink-400: color-mix(in srgb, var(--theme-base) 80%, white);
+  --color-pink-500: var(--theme-base);
+  --color-pink-600: color-mix(in srgb, var(--theme-base) 80%, black);
+  --color-pink-700: color-mix(in srgb, var(--theme-base) 60%, black);
+  --color-pink-800: color-mix(in srgb, var(--theme-base) 40%, black);
+  --color-pink-900: color-mix(in srgb, var(--theme-base) 20%, black);
+
+  --color-rose-50: color-mix(in srgb, var(--theme-base) 10%, white);
+  --color-rose-100: color-mix(in srgb, var(--theme-base) 20%, white);
+  --color-rose-200: color-mix(in srgb, var(--theme-base) 40%, white);
+  --color-rose-300: color-mix(in srgb, var(--theme-base) 60%, white);
+  --color-rose-400: color-mix(in srgb, var(--theme-base) 80%, white);
+  --color-rose-500: var(--theme-base);
+  --color-rose-600: color-mix(in srgb, var(--theme-base) 80%, black);
+  --color-rose-700: color-mix(in srgb, var(--theme-base) 60%, black);
+  --color-rose-800: color-mix(in srgb, var(--theme-base) 40%, black);
+  --color-rose-900: color-mix(in srgb, var(--theme-base) 20%, black);
+
+  --color-primary-50: color-mix(in srgb, var(--theme-base) 10%, white);
+  --color-primary-100: color-mix(in srgb, var(--theme-base) 20%, white);
+  --color-primary-200: color-mix(in srgb, var(--theme-base) 40%, white);
+  --color-primary-300: color-mix(in srgb, var(--theme-base) 60%, white);
+  --color-primary-400: color-mix(in srgb, var(--theme-base) 80%, white);
+  --color-primary-500: var(--theme-base);
+  --color-primary-600: color-mix(in srgb, var(--theme-base) 80%, black);
+  --color-primary-700: color-mix(in srgb, var(--theme-base) 60%, black);
+  --color-primary-800: color-mix(in srgb, var(--theme-base) 40%, black);
+  --color-primary-900: color-mix(in srgb, var(--theme-base) 20%, black);
 }

@@ -8,21 +8,9 @@ import { Context } from '../context/Context'
 import { BiCartDownload } from 'react-icons/bi'
 import { MdTimer } from 'react-icons/md'
 
-const FlashSale = () => {
+const FlashSale = ({ initialProducts = [] }) => {
   const { addToCart } = useContext(Context)
-  const [products, setProducts] = useState([])
-
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get('/api/product/discount/latest', { withCredentials: true })
-        setProducts(res.data.payload || [])
-      } catch (error) {
-        setProducts([])
-      }
-    }
-    fetchProduct()
-  }, [])
+  const products = initialProducts
 
   if (!products || products.length === 0) return null
 
@@ -124,6 +112,7 @@ const FlashSale = () => {
                       src={item.image} 
                       alt={item.title} 
                       fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       priority={index === 0}
                       className='object-cover transition-transform duration-1000 hover:scale-110' 
                     />

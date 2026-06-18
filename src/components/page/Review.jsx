@@ -1,14 +1,15 @@
 'use client'
 import axios from 'axios'
-import React, { useEffect, useState } from 'react'
-import { RiMapPinUserLine, RiDoubleQuotesL, RiStarFill, RiCloseLine, RiChatQuoteLine } from 'react-icons/ri'
+import React, { useState } from 'react'
+import { RiCloseLine, RiChatQuoteLine, RiStarFill } from 'react-icons/ri'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import TiptapEditor from '../forms/TiptapEditor'
+import ReviewCard from '../card/ReviewCard'
+import Link from 'next/link'
 
-const Review = () => {
-    const [reviews, setReviews] = useState([])
-    const [index, setIndex] = useState(0)
+const Review = ({ initialReviews = [] }) => {
+    const [reviews, setReviews] = useState(initialReviews)
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [loading, setLoading] = useState(false)
     
@@ -29,17 +30,7 @@ const Review = () => {
         }
     }
 
-    useEffect(() => {
-        fetchReviews()
-    }, [])
-
-    useEffect(() => {
-        if (reviews.length === 0) return
-        const timer = setInterval(() => {
-            setIndex((prev) => (prev + 1) % reviews.length)
-        }, 6000)
-        return () => clearInterval(timer)
-    }, [reviews])
+    // Removed on-mount fetch, using initialReviews instead
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -72,72 +63,31 @@ const Review = () => {
                         </h2>
                     </div>
                     
-                    <button 
-                        onClick={() => setIsFormOpen(true)}
-                        className='group relative px-10 py-4 border border-gray-200 text-gray-900 rounded-full font-sans font-bold text-[10px] uppercase tracking-widest hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all active:scale-95'
-                    >
-                        Share Your Story
-                    </button>
+                    <div className='flex items-center gap-4'>
+                        <Link 
+                            href='/reviews'
+                            className='group relative px-8 py-4 bg-gray-50 text-gray-900 rounded-full font-sans font-bold text-[10px] uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95'
+                        >
+                            See All
+                        </Link>
+                        <button 
+                            onClick={() => setIsFormOpen(true)}
+                            className='group relative px-8 py-4 border border-gray-200 text-gray-900 rounded-full font-sans font-bold text-[10px] uppercase tracking-widest hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-all active:scale-95'
+                        >
+                            Share Story
+                        </button>
+                    </div>
                 </div>
 
                 {reviews.length > 0 ? (
-                    <div className='relative h-[400px] flex items-center justify-center'>
-                        <AnimatePresence mode='wait'>
-                            <motion.div
-                                key={reviews[index].id}
-                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 1.1, y: -20 }}
-                                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                                className='absolute w-full max-w-3xl flex flex-col items-center text-center gap-10'
-                            >
-                                <RiDoubleQuotesL className='text-7xl text-gray-50/50 absolute -top-10 left-1/2 -translate-x-1/2 -z-10' />
-                                
-                                <div className='flex flex-col items-center gap-6'>
-                                    <div className='w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center text-5xl text-gray-200 border-4 border-white shadow-xl overflow-hidden'>
-                                        <RiMapPinUserLine />
-                                    </div>
-                                    <div className='flex gap-1'>
-                                        {[...Array(5)].map((_, i) => (
-                                            <RiStarFill 
-                                                key={i} 
-                                                className={`text-sm ${i < reviews[index].rating ? 'text-amber-400' : 'text-gray-100'}`} 
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className='space-y-6'>
-                                    <div 
-                                        className='text-2xl md:text-3xl font-serif italic text-gray-800 leading-relaxed max-w-2xl text-center prose prose-xl prose-gray'
-                                        dangerouslySetInnerHTML={{ __html: reviews[index].comment }}
-                                    />
-                                    <div className='space-y-1'>
-                                        <h3 className='text-lg font-bold text-gray-900 tracking-tight'>{reviews[index].name}</h3>
-                                        <p className='text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]'>Verified Guest</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
+                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+                        {reviews.slice(0, 8).map(review => (
+                            <ReviewCard key={review.id} review={review} />
+                        ))}
                     </div>
                 ) : (
-                    <div className='h-[400px] flex items-center justify-center text-gray-300 font-serif italic text-xl'>
+                    <div className='h-[200px] flex items-center justify-center text-gray-300 font-serif italic text-xl bg-gray-50 rounded-[2rem]'>
                         Awaiting your first story...
-                    </div>
-                )}
-
-                {/* Dots Navigation */}
-                {reviews.length > 1 && (
-                    <div className='flex justify-center gap-4 mt-12'>
-                        {reviews.map((_, i) => (
-                            <button
-                                key={i}
-                                onClick={() => setIndex(i)}
-                                className={`h-1.5 transition-all duration-700 rounded-full ${
-                                    i === index ? 'w-12 bg-pink-500' : 'w-4 bg-gray-100 hover:bg-gray-200'
-                                }`}
-                            />
-                        ))}
                     </div>
                 )}
             </div>

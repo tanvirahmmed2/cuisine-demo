@@ -4,21 +4,10 @@ import React, { useEffect, useState } from 'react'
 import Item from '../card/Item'
 import axios from 'axios'
 
-const Latest = () => {
-  const [products, setProducts] = useState([])
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await axios.get('/api/product/latest', { withCredentials: true })
-        setProducts(res.data.payload)
-      } catch (error) {
-        setProducts([])
-      }
-    }
-    fetchProduct()
-  }, [])
+const Latest = ({ initialProducts = [] }) => {
+  const products = initialProducts
 
-  if (!products || products.length === 0) return console.log('No product found')
+  if (!products || products.length === 0) return null
   return (
     <div className='w-full max-w-7xl mx-auto px-6 space-y-16 mb-8'>
       <h1 className='text-3xl text-center '>Top Picks</h1>

@@ -118,8 +118,8 @@ const ManageSidebar = () => {
                 <span className="text-xl">{item.icon}</span> {item.name}
               </Link>
             ))}
-            <button 
-              onClick={handleDownloadDB} 
+            <button
+              onClick={handleDownloadDB}
               className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-semibold text-sm text-gray-500 hover:bg-gray-50 hover:text-pink-600 w-full text-left"
             >
               <span className="text-xl"><MdDownload /></span> Download DB

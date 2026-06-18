@@ -172,9 +172,9 @@ const CartBar = () => {
                         className="fixed top-0 right-0 h-full w-full sm:w-[480px] bg-white z-[70] shadow-2xl flex flex-col overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="p-8 flex items-center justify-between border-b border-pink-50 bg-gradient-to-b from-pink-50/30 to-transparent">
+                        <div className="p-5 flex items-center justify-between border-b border-pink-50 bg-gradient-to-b from-pink-50/30 to-transparent">
                             <div>
-                                <h2 className="text-3xl font-semibold text-gray-900 tracking-tighter">My Cart</h2>
+                                <h2 className="text-2xl font-semibold text-gray-900 tracking-tighter">My Cart</h2>
                                 <p className="text-[10px] text-pink-500 uppercase font-semibold tracking-[0.2em] mt-1">
                                     {cart?.items?.length || 0} Items Reserved
                                 </p>
@@ -191,14 +191,14 @@ const CartBar = () => {
                         </div>
 
                         {/* Items List */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 relative">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3 relative">
                             {cart?.items?.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-center gap-8">
-                                    <div className="w-24 h-24 bg-pink-50 rounded-[2rem] flex items-center justify-center text-pink-300">
+                                <div className="h-full flex flex-col items-center justify-center text-center gap-4">
+                                    <div className="w-20 h-20 bg-pink-50 rounded-[2rem] flex items-center justify-center text-pink-300">
                                         <MdDeleteOutline size={48} />
                                     </div>
                                     <div className='space-y-2'>
-                                        <p className="text-gray-900 font-semibold text-xl">Your cart is empty</p>
+                                        <p className="text-gray-900 font-semibold text-lg">Your cart is empty</p>
                                         <p className="text-gray-400 text-sm font-medium">Add some treats to your basket!</p>
                                     </div>
                                     <Link 
@@ -212,7 +212,7 @@ const CartBar = () => {
                             ) : (
                                 cart.items.map((item) => (
                                     <div key={item.cartItemId} className="flex gap-4 p-2 items-center justify-between bg-white rounded-3xl border border-pink-100 shadow-sm group hover:border-pink-300 hover:shadow-md hover:shadow-pink-500/5 transition-all duration-300">
-                                        <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-sm shrink-0 bg-pink-50 relative">
+                                        <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm shrink-0 bg-pink-50 relative">
                                             <Image 
                                                 src={item.image} 
                                                 alt={item.title} 
@@ -229,7 +229,7 @@ const CartBar = () => {
                                         <div className="flex-1 flex flex-col justify-between py-1">
                                             <div className="flex justify-between items-start gap-2">
                                                 <div>
-                                                    <h3 className="font-semibold text-gray-900 text-base leading-tight tracking-tight">{item.title}</h3>
+                                                    <h3 className="font-semibold text-gray-900 text-sm leading-tight tracking-tight">{item.title}</h3>
                                                     {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 && (
                                                         <div className="flex flex-wrap gap-1 mt-1.5">
                                                             {Object.values(item.selectedVariants).map(v => (
@@ -240,7 +240,7 @@ const CartBar = () => {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <p className="font-semibold text-gray-900 text-lg tracking-tighter">৳{item.salePrice || item.price}</p>
+                                                <p className="font-semibold text-gray-900 text-base tracking-tighter">৳{item.salePrice || item.price}</p>
                                             </div>
                                             <div className="flex items-center justify-between mt-3">
                                                 <div className="flex items-center gap-3 bg-pink-50/50 rounded-xl px-3 py-1.5 border border-pink-100">
@@ -289,7 +289,7 @@ const CartBar = () => {
                         </div>
 
                         {cart?.items?.length > 0 && (
-                            <div className="p-4 bg-white border-t border-pink-100 space-y-6 shadow-[0_-20px_60px_rgba(236,72,153,0.08)] relative z-20">
+                            <div className="p-4 bg-white border-t border-pink-100 space-y-4 shadow-[0_-20px_60px_rgba(236,72,153,0.08)] relative z-20">
                                 <div className="space-y-1">
                                     <div className="flex justify-between text-xs font-semibold uppercase tracking-widest text-gray-400">
                                         <span>Subtotal</span>
@@ -299,16 +299,16 @@ const CartBar = () => {
                                         <span>Discount</span>
                                         <span>-৳{totalDiscount}</span>
                                     </div>
-                                    <div className="flex justify-between text-3xl font-semibold text-gray-900 pt-4 border-t border-pink-50">
+                                    <div className="flex justify-between text-2xl font-semibold text-gray-900 pt-4 border-t border-pink-50">
                                         <span>Total</span>
                                         <span className='tracking-tighter text-pink-500'>৳{totalPrice}</span>
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-3">
                                     <Link 
                                         href="/checkout" 
                                         onClick={() => setCartBar(false)}
-                                        className="w-full py-5 bg-pink-500 text-white text-center rounded-2xl font-semibold text-sm uppercase tracking-[0.2em] shadow-xl shadow-pink-500/25 hover:bg-pink-600 transition-all active:scale-[0.98]"
+                                        className="w-full py-4 bg-pink-500 text-white text-center rounded-2xl font-semibold text-xs uppercase tracking-[0.2em] shadow-xl shadow-pink-500/25 hover:bg-pink-600 transition-all active:scale-[0.98]"
                                     >
                                         Checkout Now
                                     </Link>

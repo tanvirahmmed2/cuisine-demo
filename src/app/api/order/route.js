@@ -15,14 +15,15 @@ export async function GET(req) {
     }
 
     const { rows: orders } = await pool.query(
-      "SELECT * FROM restaurant_orders ORDER BY created_at DESC"
+      "SELECT * FROM restaurant_orders WHERE tenant_id = $1 ORDER BY created_at DESC",
+      [tenant_id]
     );
 
     if (orders.length > 0) {
       const orderIds = orders.map(o => o.id);
       const { rows: itemRows } = await pool.query(
-        "SELECT * FROM restaurant_order_items WHERE order_id = ANY($1)",
-        [orderIds]
+        "SELECT * FROM restaurant_order_items WHERE order_id = ANY($1) AND tenant_id = $2",
+        [orderIds, tenant_id]
       );
       
       orders.forEach(order => {
@@ -46,6 +47,15 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+  let tenant_id;
+  try {
+    const tenantCtx = await getTenantContext();
+    if (!tenantCtx.success) return NextResponse.json(tenantCtx, { status: tenantCtx.status });
+    tenant_id = tenantCtx.payload.tenant_id;
+  } catch (e) {
+    return NextResponse.json({ success: false, message: "Context Error" }, { status: 500 });
+  }
+
   const client = await pool.connect();
   try {
     const data = await req.json();
@@ -74,16 +84,16 @@ export async function POST(req) {
 
     // 1. Handle Customer
     const { rows: existingCustomer } = await client.query(
-      "SELECT name FROM restaurant_customers WHERE phone = $1 LIMIT 1",
-      [customerPhone]
+      "SELECT name FROM restaurant_customers WHERE phone = $1 AND tenant_id = $2 LIMIT 1",
+      [customerPhone, tenant_id]
     );
 
     if (existingCustomer.length > 0) {
       customerName = existingCustomer[0].name;
     } else {
       await client.query(
-        "INSERT INTO restaurant_customers (phone, name) VALUES ($1, $2)",
-        [customerPhone, "guest"]
+        "INSERT INTO restaurant_customers (tenant_id, phone, name) VALUES ($1, $2, $3)",
+        [tenant_id, customerPhone, "guest"]
       );
     }
 
@@ -93,10 +103,11 @@ export async function POST(req) {
     // 2. Insert Order
     const { rows: orderRows } = await client.query(
       `INSERT INTO restaurant_orders 
-      (name, phone, delivery_method, table_no, sub_total, total_discount, total_price, payment_method, status, transaction_id, payment_status) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+      (tenant_id, name, phone, delivery_method, table_no, sub_total, total_discount, total_price, payment_method, status, transaction_id, payment_status) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
       RETURNING id`,
       [
+        tenant_id,
         customerName,
         customerPhone,
         delivery_method || "takein",
@@ -124,9 +135,10 @@ export async function POST(req) {
       }
 
       const { rows: itemRows } = await client.query(
-        `INSERT INTO restaurant_order_items (order_id, product_id, title, quantity, price, discount) 
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        `INSERT INTO restaurant_order_items (tenant_id, order_id, product_id, title, quantity, price, discount) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
         [
+          tenant_id,
           orderId,
           item.id || item._id, 
           finalTitle,
@@ -142,9 +154,10 @@ export async function POST(req) {
       if (item.selectedVariants) {
         for (const variant of Object.values(item.selectedVariants)) {
           await client.query(
-            `INSERT INTO restaurant_order_item_variants (order_item_id, variant_id, name, value, price_adjustment) 
-            VALUES ($1, $2, $3, $4, $5)`,
+            `INSERT INTO restaurant_order_item_variants (tenant_id, order_item_id, variant_id, name, value, price_adjustment) 
+            VALUES ($1, $2, $3, $4, $5, $6)`,
             [
+              tenant_id,
               orderItemId,
               variant.id,
               variant.name,
@@ -189,15 +202,15 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id FROM restaurant_orders WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT id FROM restaurant_orders WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, message: "Order not found" }, { status: 404 });
     }
 
-    await pool.query("DELETE FROM restaurant_orders WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_orders WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({ success: true, message: "Successfully deleted order" }, { status: 200 });
 
@@ -208,4 +221,4 @@ export async function DELETE(req) {
       error: error.message,
     }, { status: 500 });
   }
-}
+}

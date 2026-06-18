@@ -4,6 +4,15 @@ import { NextResponse } from "next/server";
 import { isSales } from "@/lib/auth/middleware";
 
 export async function POST(req) {
+  let tenant_id;
+  try {
+    const tenantCtx = await getTenantContext();
+    if (!tenantCtx.success) return NextResponse.json(tenantCtx, { status: tenantCtx.status });
+    tenant_id = tenantCtx.payload.tenant_id;
+  } catch(e) {
+    return NextResponse.json({ success: false, message: "Context Error" }, { status: 500 });
+  }
+
   const client = await pool.connect();
   try {
     const auth = await isSales();
@@ -21,8 +30,8 @@ export async function POST(req) {
 
     // 1. Verify order exists
     const { rows: orderRows } = await client.query(
-      "SELECT id FROM restaurant_orders WHERE id = $1 LIMIT 1",
-      [order_id]
+      "SELECT id FROM restaurant_orders WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [order_id, tenant_id]
     );
 
     if (orderRows.length === 0) {
@@ -32,15 +41,15 @@ export async function POST(req) {
 
     // 2. Insert Payment
     const { rows: paymentRows } = await client.query(
-      `INSERT INTO restaurant_payments (order_id, amount, method, transaction_id, status) 
-      VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [order_id, amount, method || "cash", transaction_id || "", "completed"]
+      `INSERT INTO restaurant_payments (tenant_id, order_id, amount, method, transaction_id, status) 
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [tenant_id, order_id, amount, method || "cash", transaction_id || "", "completed"]
     );
 
     // 3. Update Order Status
     await client.query(
-      "UPDATE restaurant_orders SET payment_status = $1, status = $2 WHERE id = $3",
-      ["paid", "accepted", order_id]
+      "UPDATE restaurant_orders SET payment_status = $1, status = $2 WHERE id = $3 AND tenant_id = $4",
+      ["paid", "accepted", order_id, tenant_id]
     );
 
     await client.query("COMMIT");
@@ -71,7 +80,8 @@ export async function GET(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT p.*, o.name as customer_name FROM restaurant_payments p LEFT JOIN restaurant_orders o ON p.order_id = o.id ORDER BY p.created_at DESC"
+      "SELECT p.*, o.name as customer_name FROM restaurant_payments p LEFT JOIN restaurant_orders o ON p.order_id = o.id WHERE p.tenant_id = $1 ORDER BY p.created_at DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({

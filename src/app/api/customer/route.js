@@ -15,7 +15,8 @@ export async function GET(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_customers ORDER BY id DESC"
+      "SELECT * FROM restaurant_customers WHERE tenant_id = $1 ORDER BY id DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({

@@ -20,8 +20,8 @@ export async function POST(req) {
     }
 
     const { rowCount } = await pool.query(
-      "UPDATE restaurant_reservations SET status = 'confirmed' WHERE id = $1",
-      [id]
+      "UPDATE restaurant_reservations SET status = 'confirmed' WHERE id = $1 AND tenant_id = $2",
+      [id, tenant_id]
     );
 
     if (rowCount === 0) {

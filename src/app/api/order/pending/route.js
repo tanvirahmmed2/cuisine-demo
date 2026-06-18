@@ -9,14 +9,15 @@ export async function GET(req) {
     const tenant_id = tenantCtx.payload.tenant_id;
 
     const { rows: orders } = await pool.query(
-      "SELECT * FROM restaurant_orders WHERE status = 'pending' ORDER BY created_at DESC"
+      "SELECT * FROM restaurant_orders WHERE status = 'pending' AND tenant_id = $1 ORDER BY created_at DESC",
+      [tenant_id]
     );
 
     if (orders.length > 0) {
       const orderIds = orders.map(o => o.id);
       const { rows: itemRows } = await pool.query(
-        "SELECT * FROM restaurant_order_items WHERE order_id = ANY($1)",
-        [orderIds]
+        "SELECT * FROM restaurant_order_items WHERE order_id = ANY($1) AND tenant_id = $2",
+        [orderIds, tenant_id]
       );
       
       orders.forEach(order => {

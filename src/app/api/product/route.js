@@ -14,11 +14,11 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const category_id = searchParams.get("q");
 
-    let query = "SELECT p.*, c.name as category_name, c.slug as category_slug FROM restaurant_items p LEFT JOIN restaurant_categories c ON p.category_id = c.id WHERE 1=1";
-    let params = [];
+    let query = "SELECT p.*, c.name as category_name, c.slug as category_slug FROM restaurant_items p LEFT JOIN restaurant_categories c ON p.category_id = c.id WHERE p.tenant_id = $1";
+    let params = [tenant_id];
 
     if (category_id) {
-      query += " AND p.category_id = $1";
+      query += " AND p.category_id = $2";
       params.push(category_id);
     }
 
@@ -31,8 +31,8 @@ export async function GET(req) {
     let variantsMap = {};
     if (itemIds.length > 0) {
       const { rows: variants } = await pool.query(
-        "SELECT * FROM restaurant_item_variants WHERE item_id = ANY($1)",
-        [itemIds]
+        "SELECT * FROM restaurant_item_variants WHERE item_id = ANY($1) AND tenant_id = $2",
+        [itemIds, tenant_id]
       );
       variants.forEach(v => {
         if (!variantsMap[v.item_id]) variantsMap[v.item_id] = [];
@@ -91,8 +91,8 @@ export async function POST(req) {
 
     // Check if product exists
     const { rows: existingProduct } = await pool.query(
-      "SELECT id FROM restaurant_items WHERE slug = $1 LIMIT 1",
-      [slug]
+      "SELECT id FROM restaurant_items WHERE slug = $1 AND tenant_id = $2 LIMIT 1",
+      [slug, tenant_id]
     );
 
     if (existingProduct.length > 0) {
@@ -119,8 +119,8 @@ export async function POST(req) {
     });
 
     const { rows: newProduct } = await pool.query(
-      "INSERT INTO restaurant_items (category_id, title, slug, description, price, discount, image, image_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-      [category_id, title, slug, description, price, discount, cloudImage.secure_url, cloudImage.public_id]
+      "INSERT INTO restaurant_items (tenant_id, category_id, title, slug, description, price, discount, image, image_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+      [tenant_id, category_id, title, slug, description, price, discount, cloudImage.secure_url, cloudImage.public_id]
     );
 
     const product = newProduct[0];
@@ -133,8 +133,8 @@ export async function POST(req) {
         if (Array.isArray(variants) && variants.length > 0) {
           for (const variant of variants) {
             await pool.query(
-              "INSERT INTO restaurant_item_variants (item_id, name, value, price_adjustment, is_default) VALUES ($1, $2, $3, $4, $5)",
-              [product.id, variant.name, variant.value, Number(variant.price_adjustment) || 0, variant.is_default || false]
+              "INSERT INTO restaurant_item_variants (tenant_id, item_id, name, value, price_adjustment, is_default) VALUES ($1, $2, $3, $4, $5, $6)",
+              [tenant_id, product.id, variant.name, variant.value, Number(variant.price_adjustment) || 0, variant.is_default || false]
             );
           }
         }
@@ -175,8 +175,8 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_items WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT * FROM restaurant_items WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
@@ -189,7 +189,7 @@ export async function DELETE(req) {
       await cloudinary.uploader.destroy(product.image_id);
     }
 
-    await pool.query("DELETE FROM restaurant_items WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_items WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({
       success: true,

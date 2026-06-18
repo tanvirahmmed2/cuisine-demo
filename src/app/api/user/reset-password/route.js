@@ -7,6 +7,7 @@ export async function POST(req) {
   try {
     const tenantCtx = await getTenantContext();
     if (!tenantCtx.success) return NextResponse.json(tenantCtx, { status: tenantCtx.status });
+    const tenant_id = tenantCtx.payload.tenant_id;
 
     const { token, password } = await req.json();
 
@@ -15,8 +16,8 @@ export async function POST(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id, reset_token_expires FROM restaurant_users WHERE reset_token = $1 LIMIT 1",
-      [token]
+      "SELECT id, reset_token_expires FROM restaurant_users WHERE reset_token = $1 AND tenant_id = $2 LIMIT 1",
+      [token, tenant_id]
     );
 
     if (rows.length === 0) {
@@ -32,8 +33,8 @@ export async function POST(req) {
     const hashedPass = await bcrypt.hash(password, 10);
 
     await pool.query(
-      "UPDATE restaurant_users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2",
-      [hashedPass, user.id]
+      "UPDATE restaurant_users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2 AND tenant_id = $3",
+      [hashedPass, user.id, tenant_id]
     );
 
     return NextResponse.json({ success: true, message: "Password has been successfully reset" }, { status: 200 });

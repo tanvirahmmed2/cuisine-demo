@@ -21,8 +21,8 @@ export async function POST(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_users WHERE email = $1 LIMIT 1",
-      [email]
+      "SELECT * FROM restaurant_users WHERE email = $1 AND tenant_id = $2 LIMIT 1",
+      [email, tenant_id]
     );
 
     if (rows.length === 0) {

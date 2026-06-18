@@ -20,8 +20,8 @@ export async function POST(req) {
     }
 
     const { rows: users } = await pool.query(
-      "SELECT id, role, is_banned FROM restaurant_users WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT id, role, is_banned FROM restaurant_users WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (users.length === 0) {
@@ -40,8 +40,8 @@ export async function POST(req) {
     const newBanStatus = !user.is_banned;
 
     await pool.query(
-      "UPDATE restaurant_users SET is_banned = $1 WHERE id = $2",
-      [newBanStatus, id]
+      "UPDATE restaurant_users SET is_banned = $1 WHERE id = $2 AND tenant_id = $3",
+      [newBanStatus, id, tenant_id]
     );
 
     return NextResponse.json({

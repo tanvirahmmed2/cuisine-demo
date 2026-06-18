@@ -15,7 +15,8 @@ export async function GET(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_support_tickets ORDER BY created_at DESC"
+      "SELECT * FROM restaurant_support_tickets WHERE tenant_id = $1 ORDER BY created_at DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({
@@ -41,8 +42,8 @@ export async function POST(req) {
     }
 
     const { rows: newSupport } = await pool.query(
-      "INSERT INTO restaurant_support_tickets (name, email, subject, message) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, subject, message]
+      "INSERT INTO restaurant_support_tickets (tenant_id, name, email, subject, message) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [tenant_id, name, email, subject, message]
     );
 
     return NextResponse.json({
@@ -73,15 +74,15 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id FROM restaurant_support_tickets WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT id FROM restaurant_support_tickets WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, message: "Support data not found" }, { status: 404 });
     }
 
-    await pool.query("DELETE FROM restaurant_support_tickets WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_support_tickets WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({
       success: true,
@@ -91,4 +92,4 @@ export async function DELETE(req) {
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
-}
+}

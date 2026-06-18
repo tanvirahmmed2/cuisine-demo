@@ -17,26 +17,30 @@ export async function GET(req) {
     const { rows: orderStats } = await pool.query(
       `SELECT COUNT(id) as total_orders, COALESCE(SUM(total_price), 0) as total_revenue 
        FROM restaurant_orders 
-       WHERE status != 'canceled'`
+       WHERE status != 'canceled' AND tenant_id = $1`,
+       [tenant_id]
     );
 
     // 2. Pending Orders
     const { rows: pendingStats } = await pool.query(
       `SELECT COUNT(id) as pending_orders 
        FROM restaurant_orders 
-       WHERE status = 'pending'`
+       WHERE status = 'pending' AND tenant_id = $1`,
+       [tenant_id]
     );
 
     // 3. Total Customers
     const { rows: customerStats } = await pool.query(
       `SELECT COUNT(id) as total_customers 
-       FROM restaurant_customers`
+       FROM restaurant_customers WHERE tenant_id = $1`,
+       [tenant_id]
     );
 
     // 4. Total Items
     const { rows: itemStats } = await pool.query(
       `SELECT COUNT(id) as total_items 
-       FROM restaurant_items`
+       FROM restaurant_items WHERE tenant_id = $1`,
+       [tenant_id]
     );
 
     const payload = {

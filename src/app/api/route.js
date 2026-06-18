@@ -10,7 +10,8 @@ export async function GET(req) {
     const tenant_id = tenantCtx.payload.tenant_id;
 
     const { rows } = await pool.query(
-      "SELECT * FROM website LIMIT 1"
+      "SELECT * FROM restaurant_websites WHERE tenant_id = $1 LIMIT 1",
+      [tenant_id]
     );
 
     if (rows.length === 0) {
@@ -49,7 +50,8 @@ export async function PATCH(req) {
     const body = await req.json();
 
     const { rows } = await pool.query(
-      "SELECT id FROM website LIMIT 1"
+      "SELECT website_id FROM restaurant_websites WHERE tenant_id = $1 LIMIT 1",
+      [tenant_id]
     );
 
     if (rows.length === 0) {
@@ -59,7 +61,7 @@ export async function PATCH(req) {
       );
     }
 
-    const website_id = rows[0].id;
+    const website_id = rows[0].website_id;
 
     const allowedFields = [
       'name', 'business_name', 'logo', 'favicon',
@@ -89,15 +91,16 @@ export async function PATCH(req) {
       .join(", ");
 
     const updateQuery = `
-      UPDATE website
+      UPDATE restaurant_websites
       SET ${setQuery}, updated_at = now()
-      WHERE id = $${fields.length + 1}
+      WHERE website_id = $${fields.length + 1} AND tenant_id = $${fields.length + 2}
       RETURNING *
     `;
 
     const updated = await pool.query(updateQuery, [
       ...values,
       website_id,
+      tenant_id
     ]);
 
     return NextResponse.json(

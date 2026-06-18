@@ -24,10 +24,12 @@ export async function GET(req) {
         COUNT(o.id)::int as "Total Orders",
         COALESCE(SUM(o.total_price), 0)::float as "Total Spent (BDT)"
       FROM restaurant_customers c
-      LEFT JOIN restaurant_orders o ON c.phone = o.phone
+      LEFT JOIN restaurant_orders o ON c.phone = o.phone AND o.tenant_id = c.tenant_id
+      WHERE c.tenant_id = $1
       GROUP BY c.id, c.name, c.phone
       ORDER BY c.id DESC
-      `
+      `,
+      [tenant_id]
     );
 
     // Create workbook and worksheet
@@ -50,4 +52,3 @@ export async function GET(req) {
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
-

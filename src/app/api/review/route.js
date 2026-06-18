@@ -10,7 +10,8 @@ export async function GET(req) {
     const tenant_id = tenantCtx.payload.tenant_id;
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_reviews ORDER BY id DESC"
+      "SELECT * FROM restaurant_reviews WHERE tenant_id = $1 ORDER BY id DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({
@@ -37,8 +38,8 @@ export async function POST(req) {
 
     // Enforce one review per email
     const { rows: existing } = await pool.query(
-      "SELECT id FROM restaurant_reviews WHERE email = $1 LIMIT 1",
-      [email]
+      "SELECT id FROM restaurant_reviews WHERE email = $1 AND tenant_id = $2 LIMIT 1",
+      [email, tenant_id]
     );
 
     if (existing.length > 0) {
@@ -46,8 +47,8 @@ export async function POST(req) {
     }
 
     const { rows: newReview } = await pool.query(
-      "INSERT INTO restaurant_reviews (name, email, comment, rating) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, email, comment, rating]
+      "INSERT INTO restaurant_reviews (tenant_id, name, email, comment, rating) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [tenant_id, name, email, comment, rating]
     );
 
     return NextResponse.json({
@@ -78,15 +79,15 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id FROM restaurant_reviews WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT id FROM restaurant_reviews WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, message: "Review not found" }, { status: 404 });
     }
 
-    await pool.query("DELETE FROM restaurant_reviews WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_reviews WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({
       success: true,

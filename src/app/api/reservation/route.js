@@ -15,7 +15,8 @@ export async function GET(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_reservations ORDER BY res_date DESC"
+      "SELECT * FROM restaurant_reservations WHERE tenant_id = $1 ORDER BY res_date DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({
@@ -41,9 +42,9 @@ export async function POST(req) {
     }
 
     const { rows: newRes } = await pool.query(
-      `INSERT INTO restaurant_reservations (name, email, res_date, member_count, table_no, message) 
-      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [name, email, date, member, table, message || ""]
+      `INSERT INTO restaurant_reservations (tenant_id, name, email, res_date, member_count, table_no, message) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [tenant_id, name, email, date, member, table, message || ""]
     );
 
     return NextResponse.json({
@@ -74,15 +75,15 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id FROM restaurant_reservations WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT id FROM restaurant_reservations WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
       return NextResponse.json({ success: false, message: "Reservation not found" }, { status: 404 });
     }
 
-    await pool.query("DELETE FROM restaurant_reservations WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_reservations WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({
       success: true,
@@ -92,4 +93,4 @@ export async function DELETE(req) {
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
-}
+}

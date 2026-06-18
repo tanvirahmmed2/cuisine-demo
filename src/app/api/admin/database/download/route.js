@@ -16,21 +16,20 @@ export async function GET(req) {
     }
 
     const tables = [
-      "users",
-      "customers",
-      "categories",
-      "items",
-      "item_variants",
-      "orders",
-      "order_items",
-      "order_item_variants",
-      "payments",
-      "expenses",
-      "reservations",
-      "support_tickets",
-      "reviews",
-      "offers",
-      "website"
+      "restaurant_users",
+      "restaurant_customers",
+      "restaurant_categories",
+      "restaurant_items",
+      "restaurant_item_variants",
+      "restaurant_orders",
+      "restaurant_order_items",
+      "restaurant_order_item_variants",
+      "restaurant_payments",
+      "restaurant_expenses",
+      "restaurant_reservations",
+      "restaurant_support_tickets",
+      "restaurant_reviews",
+      "restaurant_websites"
     ];
 
     const databaseExport = {
@@ -39,7 +38,7 @@ export async function GET(req) {
     };
 
     for (const table of tables) {
-      const { rows } = await pool.query(`SELECT * FROM ${table}`);
+      const { rows } = await pool.query(`SELECT * FROM ${table} WHERE tenant_id = $1`, [tenant_id]);
       databaseExport.data[table] = rows;
     }
 

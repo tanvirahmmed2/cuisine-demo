@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(req, { params }) {
   try {
+    const tenantCtx = await getTenantContext();
+    if (!tenantCtx.success) return NextResponse.json(tenantCtx, { status: tenantCtx.status });
+    const tenant_id = tenantCtx.payload.tenant_id;
+
     const { id } = await params;
     if (!id) {
       return NextResponse.json({ success: false, message: "Order ID is required" }, { status: 400 });
@@ -11,8 +15,8 @@ export async function GET(req, { params }) {
 
     // Fetch order details
     const { rows: orderRows } = await pool.query(
-      "SELECT * FROM restaurant_orders WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT * FROM restaurant_orders WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (orderRows.length === 0) {
@@ -23,8 +27,8 @@ export async function GET(req, { params }) {
 
     // Fetch order items
     const { rows: itemRows } = await pool.query(
-      "SELECT * FROM restaurant_order_items WHERE order_id = $1",
-      [id]
+      "SELECT * FROM restaurant_order_items WHERE order_id = $1 AND tenant_id = $2",
+      [id, tenant_id]
     );
 
     // Fetch variants for all items in this order
@@ -33,8 +37,8 @@ export async function GET(req, { params }) {
     
     if (itemIds.length > 0) {
       const { rows: variantRows } = await pool.query(
-        "SELECT * FROM restaurant_order_item_variants WHERE order_item_id = ANY($1)",
-        [itemIds]
+        "SELECT * FROM restaurant_order_item_variants WHERE order_item_id = ANY($1) AND tenant_id = $2",
+        [itemIds, tenant_id]
       );
       
       variantRows.forEach(v => {

@@ -17,7 +17,8 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const filterRole = searchParams.get('role');
 
-    let query = "SELECT id, name, email, role, is_banned, created_at FROM restaurant_users WHERE 1=1";
+    let query = "SELECT id, name, email, role, is_banned, created_at FROM restaurant_users WHERE tenant_id = $1";
+    let params = [tenant_id];
     
     if (filterRole === 'management') {
       query += " AND role IN ('admin', 'manager', 'sales')";
@@ -25,7 +26,7 @@ export async function GET(req) {
     
     query += " ORDER BY created_at DESC";
 
-    const { rows } = await pool.query(query);
+    const { rows } = await pool.query(query, params);
 
     return NextResponse.json({
       success: true,

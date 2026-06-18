@@ -12,9 +12,10 @@ export async function GET(req) {
       `SELECT p.*, c.name as category_name, c.slug as category_slug 
        FROM restaurant_items p 
        LEFT JOIN restaurant_categories c ON p.category_id = c.id 
-       WHERE p.discount > 0 
+       WHERE p.discount > 0 AND p.tenant_id = $1
        ORDER BY p.created_at DESC 
-       LIMIT 3`
+       LIMIT 3`,
+      [tenant_id]
     );
 
     return NextResponse.json({

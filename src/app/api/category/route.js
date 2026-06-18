@@ -12,7 +12,8 @@ export async function GET(req) {
     const tenant_id = tenantCtx.payload.tenant_id;
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_categories ORDER BY created_at DESC"
+      "SELECT * FROM restaurant_categories WHERE tenant_id = $1 ORDER BY created_at DESC",
+      [tenant_id]
     );
 
     return NextResponse.json({
@@ -47,8 +48,8 @@ export async function POST(req) {
 
     // Check if category exists
     const { rows: existingCat } = await pool.query(
-      "SELECT id FROM restaurant_categories WHERE slug = $1 LIMIT 1",
-      [slug]
+      "SELECT id FROM restaurant_categories WHERE slug = $1 AND tenant_id = $2 LIMIT 1",
+      [slug, tenant_id]
     );
 
     if (existingCat.length > 0) {
@@ -79,8 +80,8 @@ export async function POST(req) {
     });
 
     const { rows: newCat } = await pool.query(
-      "INSERT INTO restaurant_categories (name, slug, image, image_id) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, slug, cloudImage.secure_url, cloudImage.public_id]
+      "INSERT INTO restaurant_categories (tenant_id, name, slug, image, image_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [tenant_id, name, slug, cloudImage.secure_url, cloudImage.public_id]
     );
 
     return NextResponse.json({
@@ -111,8 +112,8 @@ export async function DELETE(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT * FROM restaurant_categories WHERE id = $1 LIMIT 1",
-      [id]
+      "SELECT * FROM restaurant_categories WHERE id = $1 AND tenant_id = $2 LIMIT 1",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
@@ -125,7 +126,7 @@ export async function DELETE(req) {
       await cloudinary.uploader.destroy(cat.image_id);
     }
 
-    await pool.query("DELETE FROM restaurant_categories WHERE id = $1", [id]);
+    await pool.query("DELETE FROM restaurant_categories WHERE id = $1 AND tenant_id = $2", [id, tenant_id]);
 
     return NextResponse.json({
       success: true,
@@ -135,4 +136,4 @@ export async function DELETE(req) {
   } catch (error) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
-}
+}

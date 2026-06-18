@@ -20,8 +20,8 @@ export async function POST(req) {
     }
 
     const { rows } = await pool.query(
-      "SELECT id, is_available FROM restaurant_items WHERE id = $1",
-      [id]
+      "SELECT id, is_available FROM restaurant_items WHERE id = $1 AND tenant_id = $2",
+      [id, tenant_id]
     );
 
     if (rows.length === 0) {
@@ -32,8 +32,8 @@ export async function POST(req) {
     const newStatus = !currentStatus;
 
     await pool.query(
-      "UPDATE restaurant_items SET is_available = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
-      [newStatus, id]
+      "UPDATE restaurant_items SET is_available = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 AND tenant_id = $3",
+      [newStatus, id, tenant_id]
     );
 
     return NextResponse.json({

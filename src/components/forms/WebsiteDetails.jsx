@@ -89,17 +89,17 @@ const WebsiteDetails = () => {
 
                     <div className='flex flex-col gap-1'>
                         <label className='text-xs font-bold text-gray-400 uppercase'>Website Tagline</label>
-                        <input type="text" name='tagline' value={formData.tagline} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all' placeholder="Best Pizza in Town"/>
+                        <input type="text" name='tagline' value={formData.tagline} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all'/>
                     </div>
 
                     <div className='flex flex-col gap-1'>
                         <label className='text-xs font-bold text-gray-400 uppercase'>Hero Title</label>
-                        <input type="text" name='hero_title' value={formData.hero_title} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all' placeholder="Welcome to our restaurant"/>
+                        <input type="text" name='hero_title' value={formData.hero_title} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all'/>
                     </div>
 
                     <div className='flex flex-col gap-1'>
                         <label className='text-xs font-bold text-gray-400 uppercase'>Hero Subtitle</label>
-                        <textarea name="hero_subtitle" value={formData.hero_subtitle} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl h-28 outline-none focus:border-pink-500 transition-all resize-none' placeholder="Discover culinary excellence..."></textarea>
+                        <textarea name="hero_subtitle" value={formData.hero_subtitle} required onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl h-28 outline-none focus:border-pink-500 transition-all resize-none'></textarea>
                     </div>
                 </div>
 
@@ -125,7 +125,7 @@ const WebsiteDetails = () => {
 
                     <div className='flex flex-col gap-1'>
                         <label className='text-xs font-bold text-gray-400 uppercase'>Social Link</label>
-                        <input type="text" name='sociallink' value={formData.sociallink} onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all' placeholder="https://instagram.com/your_restaurant"/>
+                        <input type="text" name='sociallink' value={formData.sociallink} onChange={handleChange} className='p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:border-pink-500 transition-all'/>
                     </div>
                     
                     <div className='flex flex-col gap-1 mt-4'>

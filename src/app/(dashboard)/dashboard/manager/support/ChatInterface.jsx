@@ -144,7 +144,7 @@ const ChatInterface = ({ initialTickets }) => {
               <TiptapEditor
                   content={newMessage}
                   onChange={setNewMessage}
-                  placeholder="Type your reply here..."
+                 
               />
               <div className='flex justify-end'>
                 <button 

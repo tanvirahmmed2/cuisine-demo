@@ -112,26 +112,7 @@ const Intro = () => {
               <div className='absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent pointer-events-none' />
             </div>
 
-            <motion.div 
-              whileHover={{ y: -5 }}
-              className='absolute -bottom-10 left-0 lg:-left-16 bg-white p-8 rounded-lg shadow-2xl border border-gray-50 max-w-[280px] z-20'
-            >
-              <div className='space-y-4'>
-                <div className='inline-block px-3 py-1 bg-pink-50 text-pink-500 text-[9px] font-bold uppercase tracking-widest rounded-full'>
-                  Today&apos;s Choice
-                </div>
-                <h3 className='text-xl font-serif text-gray-900 leading-tight'>{item.title}</h3>
-                
-                <div className='flex items-baseline gap-2'>
-                  <span className='text-2xl  font-medium text-gray-900'>৳{Number(item.price - (item.discount || 0)).toFixed(2)}</span>
-                  {item.discount > 0 && <span className='text-xs line-through text-gray-300'>৳{Number(item.price).toFixed(2)}</span>}
-                </div>
-
-                <Link href={`/menu?id=${item.id}`} className='block w-full pt-4 text-[10px] font-bold text-pink-500 uppercase tracking-widest hover:text-pink-600 transition-colors'>
-                  See Details →
-                </Link>
-              </div>
-            </motion.div>
+         
 
             <div className='absolute -top-10 right-0 w-32 h-32 border-t-2 border-r-2 border-pink-100 rounded-tr-[3rem] -z-10' />
           </motion.div>

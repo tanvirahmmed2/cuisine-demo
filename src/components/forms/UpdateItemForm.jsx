@@ -105,13 +105,13 @@ const UpdateItemForm = ({ product }) => {
                             {variants.map((variant, index) => (
                                 <div key={index} className='grid grid-cols-1 md:grid-cols-4 gap-3 bg-gray-50 p-3 rounded-xl relative group'>
                                     <div className='flex flex-col gap-1'>
-                                        <input type="text" name="name" placeholder="Name (e.g. Size)" value={variant.name} onChange={(e) => handleVariantChange(index, e)} required className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
+                                        <input type="text" name="name" value={variant.name} onChange={(e) => handleVariantChange(index, e)} required className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
                                     </div>
                                     <div className='flex flex-col gap-1'>
-                                        <input type="text" name="value" placeholder="Value (e.g. Large)" value={variant.value} onChange={(e) => handleVariantChange(index, e)} required className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
+                                        <input type="text" name="value" value={variant.value} onChange={(e) => handleVariantChange(index, e)} required className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
                                     </div>
                                     <div className='flex flex-col gap-1'>
-                                        <input type="number" name="price_adjustment" placeholder="Extra Price" value={variant.price_adjustment} onChange={(e) => handleVariantChange(index, e)} className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
+                                        <input type="number" name="price_adjustment" value={variant.price_adjustment} onChange={(e) => handleVariantChange(index, e)} className='w-full p-1.5 text-sm outline-none border border-gray-300 rounded-lg focus:border-pink-500 transition-all' />
                                     </div>
                                     <div className='flex items-center gap-2'>
                                         <label className='flex items-center gap-2 text-xs font-medium text-gray-600 cursor-pointer'>

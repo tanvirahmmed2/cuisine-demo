@@ -83,7 +83,7 @@ const Orderform = () => {
                     type="text" name='phone' id='phone' 
                     onChange={handleChange} value={formData.phone} 
                     className='w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl outline-none focus:border-pink-500 transition-all font-semibold text-sm' 
-                    placeholder='Guest by default' 
+                    
                 />
             </div>
             
@@ -190,7 +190,7 @@ const Orderform = () => {
 
                             <div className='flex flex-col gap-1.5'>
                                 <label htmlFor="table_no" className='text-[10px] font-semibold uppercase tracking-widest text-gray-400 ml-1'>Table (Optional)</label>
-                                <input name="table_no" id="table_no" onChange={handleChange} value={formData.table_no} placeholder="e.g. A1" className='w-full p-3 bg-gray-50 border border-gray-50 rounded-xl outline-none font-semibold text-sm'/>
+                                <input name="table_no" id="table_no" onChange={handleChange} value={formData.table_no} className='w-full p-3 bg-gray-50 border border-gray-50 rounded-xl outline-none font-semibold text-sm'/>
                             </div>
                         </div>
 

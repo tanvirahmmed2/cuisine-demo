@@ -116,11 +116,11 @@ const UserOrderForm = () => {
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
                                 <div className='flex flex-col gap-2'>
                                     <label className='text-[10px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1'>Full Name</label>
-                                    <input type="text" name='name' required onChange={handleChange} value={formData.name} className='w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-pink-500/5 transition-all font-bold text-slate-700' placeholder='Your name' />
+                                    <input type="text" name='name' required onChange={handleChange} value={formData.name} className='w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-pink-500/5 transition-all font-bold text-slate-700' />
                                 </div>
                                 <div className='flex flex-col gap-2'>
                                     <label className='text-[10px] font-semibold uppercase text-slate-400 tracking-[0.2em] ml-1'>Phone Number</label>
-                                    <input type="text" name='phone' required onChange={handleChange} value={formData.phone} className='w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-pink-500/5 transition-all font-bold text-slate-700' placeholder='Primary contact' />
+                                    <input type="text" name='phone' required onChange={handleChange} value={formData.phone} className='w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-pink-500/5 transition-all font-bold text-slate-700' />
                                 </div>
                             </div>
                         </section>
@@ -230,7 +230,7 @@ const UserOrderForm = () => {
                                             required 
                                             onChange={handleChange} 
                                             value={formData.transaction_id} 
-                                            placeholder="Enter Transaction ID"
+                                           
                                             className='w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-pink-500/5 transition-all font-bold text-slate-700' 
                                         />
                                     </div>

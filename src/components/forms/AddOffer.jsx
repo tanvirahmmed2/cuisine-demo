@@ -62,12 +62,12 @@ const AddOffer = ({ fetchOffers }) => {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <label className="text-xs font-bold text-gray-500 uppercase">Offer Title</label>
-        <input type="text" name="title" value={data.title} onChange={handleChange} required className="w-full p-3 border rounded-xl" placeholder="e.g., Summer Special" />
+        <input type="text" name="title" value={data.title} onChange={handleChange} required className="w-full p-3 border rounded-xl" />
       </div>
 
       <div className="flex flex-col gap-1">
         <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
-        <TiptapEditor content={data.description} onChange={(val) => setData({ ...data, description: val })} placeholder="Offer details..." />
+        <TiptapEditor content={data.description} onChange={(val) => setData({ ...data, description: val })} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

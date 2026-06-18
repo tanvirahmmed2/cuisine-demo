@@ -80,7 +80,7 @@ const UpdateUserForm = () => {
                             onChange={handleChange} 
                             id='password' 
                             value={formData.password} 
-                            placeholder="Leave blank to keep current"
+                           
                             className='w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-pink-500 focus:bg-white transition-all text-sm' 
                         />
                     </div>

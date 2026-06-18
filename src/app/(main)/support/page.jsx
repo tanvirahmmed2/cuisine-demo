@@ -99,11 +99,11 @@ const Support = () => {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                             <div className='flex flex-col gap-1.5'>
                                 <label className='text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1'>Name</label>
-                                <input type="text" name='name' required onChange={handleChange} value={formData.name} className='w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' placeholder="John Doe" />
+                                <input type="text" name='name' required onChange={handleChange} value={formData.name} className='w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' />
                             </div>
                             <div className='flex flex-col gap-1.5'>
                                 <label className='text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1'>Email</label>
-                                <input type="email" name='email' required onChange={handleChange} value={formData.email} className='w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' placeholder="john@example.com" />
+                                <input type="email" name='email' required onChange={handleChange} value={formData.email} className='w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' />
                             </div>
                         </div>
 
@@ -111,7 +111,7 @@ const Support = () => {
                             <label className='text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1'>Subject</label>
                             <div className='relative'>
                                 <FaPenNib className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-300' />
-                                <input type="text" name='subject' required onChange={handleChange} value={formData.subject} className='w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' placeholder="What is this about?" />
+                                <input type="text" name='subject' required onChange={handleChange} value={formData.subject} className='w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm' />
                             </div>
                         </div>
 
@@ -120,7 +120,7 @@ const Support = () => {
                             <TiptapEditor
                                 content={formData.message}
                                 onChange={(html) => setFormData(prev => ({ ...prev, message: html }))}
-                                placeholder="Tell us more about your request..."
+                               
                             />
                         </div>
 

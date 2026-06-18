@@ -53,7 +53,7 @@ const People = () => {
         <form onSubmit={handlePromote} className='flex flex-col md:flex-row gap-3'>
           <input 
             type="email" 
-            placeholder="User Email" 
+            
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

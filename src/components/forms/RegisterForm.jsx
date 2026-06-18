@@ -60,7 +60,7 @@ const RegisterForm = () => {
                             required 
                             onChange={handleChange} 
                             value={formData.name} 
-                            placeholder="John Doe"
+                           
                             className='w-full px-4 py-3 bg-gray-50 border border-gray-50 rounded-xl outline-none focus:border-pink-500 focus:bg-white transition-all text-sm font-medium'
                         />
                     </div>
@@ -74,7 +74,7 @@ const RegisterForm = () => {
                             onChange={handleChange} 
                             value={formData.phone} 
                             required 
-                            placeholder="01XXXXXXXXX"
+                           
                             className='w-full px-4 py-3 bg-gray-50 border border-gray-50 rounded-xl outline-none focus:border-pink-500 focus:bg-white transition-all text-sm font-medium'
                         />
                     </div>
@@ -88,7 +88,7 @@ const RegisterForm = () => {
                             onChange={handleChange} 
                             required 
                             value={formData.email} 
-                            placeholder="name@example.com"
+                           
                             className='w-full px-4 py-3 bg-gray-50 border border-gray-50 rounded-xl outline-none focus:border-pink-500 focus:bg-white transition-all text-sm font-medium'
                         />
                     </div>
@@ -102,7 +102,7 @@ const RegisterForm = () => {
                             id='password' 
                             value={formData.password} 
                             required 
-                            placeholder="••••••••"
+                           
                             className='w-full px-4 py-3 bg-gray-50 border border-gray-50 rounded-xl outline-none focus:border-pink-500 focus:bg-white transition-all text-sm font-medium'
                         />
                     </div>

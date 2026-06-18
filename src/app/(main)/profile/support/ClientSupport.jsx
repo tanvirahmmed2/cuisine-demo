@@ -179,7 +179,7 @@ const ClientSupport = ({ initialTickets }) => {
               <TiptapEditor
                   content={newMessage}
                   onChange={setNewMessage}
-                  placeholder="Type your message here..."
+                 
               />
               <div className='flex justify-end'>
                 <button 
@@ -241,7 +241,7 @@ const ClientSupport = ({ initialTickets }) => {
                     onChange={(e) => setNewSubject(e.target.value)}
                     required
                     className='w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-pink-500 transition-all text-sm' 
-                    placeholder="E.g., Order issue, Question" 
+                    
                   />
                 </div>
                 
@@ -251,7 +251,7 @@ const ClientSupport = ({ initialTickets }) => {
                     <TiptapEditor
                       content={newInitialMsg}
                       onChange={setNewInitialMsg}
-                      placeholder="Describe your issue..."
+                     
                     />
                   </div>
                 </div>

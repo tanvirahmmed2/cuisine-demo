@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { CgUnavailable } from "react-icons/cg";
 import axios from 'axios';
+import TiptapEditor from './TiptapEditor';
 import toast from 'react-hot-toast'
 
 const UpdateItemForm = ({ product }) => {
@@ -74,7 +75,10 @@ const UpdateItemForm = ({ product }) => {
                 
                 <div className='w-full flex flex-col gap-1'>
                     <label className='text-sm font-semibold text-gray-600'>Description</label>
-                    <textarea name="description" id="description" value={formData.description} required onChange={handleChange} className='w-full p-2 px-3 rounded-lg border border-gray-300 outline-none focus:border-pink-500 transition-colors h-24 resize-none' />
+                    <TiptapEditor 
+                        content={formData.description} 
+                        onChange={(html) => setFormData((prev) => ({ ...prev, description: html }))} 
+                    />
                 </div>
 
                 <div className='grid grid-cols-2 gap-4'>

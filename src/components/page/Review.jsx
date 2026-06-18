@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { RiMapPinUserLine, RiDoubleQuotesL, RiStarFill, RiCloseLine, RiChatQuoteLine } from 'react-icons/ri'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
+import TiptapEditor from '../forms/TiptapEditor'
 
 const Review = () => {
     const [reviews, setReviews] = useState([])
@@ -107,9 +108,10 @@ const Review = () => {
                                 </div>
 
                                 <div className='space-y-6'>
-                                    <p className='text-2xl md:text-3xl font-serif italic text-gray-800 leading-relaxed max-w-2xl'>
-                                        "{reviews[index].comment}"
-                                    </p>
+                                    <div 
+                                        className='text-2xl md:text-3xl font-serif italic text-gray-800 leading-relaxed max-w-2xl text-center prose prose-xl prose-gray'
+                                        dangerouslySetInnerHTML={{ __html: reviews[index].comment }}
+                                    />
                                     <div className='space-y-1'>
                                         <h3 className='text-lg font-bold text-gray-900 tracking-tight'>{reviews[index].name}</h3>
                                         <p className='text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em]'>Verified Guest</p>
@@ -214,13 +216,10 @@ const Review = () => {
 
                                 <div className='space-y-2'>
                                     <label className='text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1'>Comment</label>
-                                    <textarea 
-                                        required
-                                        rows={4}
+                                    <TiptapEditor 
+                                        content={formData.comment}
+                                        onChange={(html) => setFormData({...formData, comment: html})}
                                         placeholder='Tell us about your visit...'
-                                        className='w-full px-5 py-4 bg-gray-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-pink-500/20 transition-all resize-none'
-                                        value={formData.comment}
-                                        onChange={(e) => setFormData({...formData, comment: e.target.value})}
                                     />
                                 </div>
 

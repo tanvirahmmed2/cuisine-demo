@@ -364,7 +364,7 @@ CREATE TABLE restaurant_reservations (
 
 
 
-CREATE TABLE restaurant_support_tickets (
+CREATE TABLE restaurant_contact_tickets (
   id SERIAL PRIMARY KEY,
   tenant_id INT REFERENCES ress_tenants(tenant_id) ON DELETE CASCADE,
 
@@ -374,6 +374,32 @@ CREATE TABLE restaurant_support_tickets (
   message TEXT,
 
   status VARCHAR(50) DEFAULT 'unread',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE restaurant_support_tickets (
+  id SERIAL PRIMARY KEY,
+  tenant_id INT REFERENCES ress_tenants(tenant_id) ON DELETE CASCADE,
+
+  user_id INT REFERENCES restaurant_users(id) ON DELETE SET NULL,
+
+  subject VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'open',
+
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE restaurant_support_messages (
+  id SERIAL PRIMARY KEY,
+  tenant_id INT REFERENCES ress_tenants(tenant_id) ON DELETE CASCADE,
+
+  ticket_id INT REFERENCES restaurant_support_tickets(id) ON DELETE CASCADE,
+  sender_type VARCHAR(50) CHECK (sender_type IN ('user', 'manager')),
+  sender_id INT,
+
+  message TEXT,
 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -494,11 +520,23 @@ CREATE POLICY tenant_isolation_policy ON restaurant_reservations
   USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::int);
 ALTER TABLE restaurant_reservations ALTER COLUMN tenant_id SET DEFAULT NULLIF(current_setting('app.current_tenant_id', true), '')::int;
 
+-- RLS for restaurant_contact_tickets
+ALTER TABLE restaurant_contact_tickets ENABLE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON restaurant_contact_tickets 
+  USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::int);
+ALTER TABLE restaurant_contact_tickets ALTER COLUMN tenant_id SET DEFAULT NULLIF(current_setting('app.current_tenant_id', true), '')::int;
+
 -- RLS for restaurant_support_tickets
 ALTER TABLE restaurant_support_tickets ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation_policy ON restaurant_support_tickets 
   USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::int);
 ALTER TABLE restaurant_support_tickets ALTER COLUMN tenant_id SET DEFAULT NULLIF(current_setting('app.current_tenant_id', true), '')::int;
+
+-- RLS for restaurant_support_messages
+ALTER TABLE restaurant_support_messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation_policy ON restaurant_support_messages 
+  USING (tenant_id = NULLIF(current_setting('app.current_tenant_id', true), '')::int);
+ALTER TABLE restaurant_support_messages ALTER COLUMN tenant_id SET DEFAULT NULLIF(current_setting('app.current_tenant_id', true), '')::int;
 
 -- RLS for restaurant_reviews
 ALTER TABLE restaurant_reviews ENABLE ROW LEVEL SECURITY;

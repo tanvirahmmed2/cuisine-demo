@@ -82,9 +82,10 @@ const ItemDetails = ({ product }) => {
                 {product.title}
               </h1>
             </div>
-            <p className='text-slate-500 leading-relaxed text-lg font-medium'>
-              {product.description}
-            </p>
+            <div 
+              className='text-slate-500 leading-relaxed text-lg font-medium prose prose-slate max-w-none'
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            />
           </div>
 
           {/* Variants Section */}

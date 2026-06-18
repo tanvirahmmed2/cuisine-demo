@@ -4,6 +4,7 @@ import axios from 'axios'
 import React, { useContext, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Context } from '../context/Context'
+import TiptapEditor from './TiptapEditor'
 
 const AddItem = () => {
     const { categories } = useContext(Context)
@@ -91,8 +92,10 @@ const AddItem = () => {
 
             <div className='w-full flex flex-col gap-1.5'>
                 <label htmlFor="description" className='text-sm font-medium text-slate-700'>Description</label>
-                <textarea name='description' id='description' required value={formData.description} onChange={handleChange} 
-                    className='w-full p-2 px-3 outline-none border border-slate-300 rounded-lg focus:ring-2 focus:ring-pink-500/5 focus:border-pink-500 transition-all resize-none' />
+                <TiptapEditor 
+                    content={formData.description} 
+                    onChange={(html) => setFormData({ ...formData, description: html })} 
+                />
             </div>
 
             <div className='w-full flex flex-col gap-1.5'>

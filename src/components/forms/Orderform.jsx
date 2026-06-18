@@ -6,16 +6,19 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import Image from 'next/image'
 import { MdDeleteOutline, MdChevronRight } from 'react-icons/md'
+import { generateReceipt } from '@/lib/database/print'
 
 const paymentOptions = ['bkash', 'card', 'nagad', 'rocket', 'cash']
 const deliveryOptions = ['takeaway', 'takein']
 
 const Orderform = () => {
-    const { addToCart, removeFromCart, decreaseQuantity, clearCart, cart } = useContext(Context)
+    const { addToCart, removeFromCart, decreaseQuantity, clearCart, cart, siteData } = useContext(Context)
 
     const [subTotal, setSubTotal] = useState(0)
     const [totalPrice, setTotalPrice] = useState(0)
     const [totalDiscount, setTotalDiscount] = useState(0)
+    const [discountType, setDiscountType] = useState('flat') // 'flat' or 'percent'
+    const [discountValue, setDiscountValue] = useState(0)
     
     const [formData, setFormData] = useState({
         phone: '',
@@ -38,10 +41,22 @@ const Orderform = () => {
             tempTotalPrice += item.salePrice
         })
 
+        let manualDiscount = 0
+        if (discountType === 'percent') {
+            manualDiscount = tempTotalPrice * (discountValue / 100)
+        } else {
+            manualDiscount = discountValue
+        }
+
+        // Cap manual discount to ensure total price is not negative
+        if (manualDiscount > tempTotalPrice) {
+            manualDiscount = tempTotalPrice
+        }
+
         setSubTotal(tempSubTotal)
-        setTotalPrice(tempTotalPrice)
-        setTotalDiscount(tempSubTotal - tempTotalPrice)
-    }, [cart])
+        setTotalPrice(tempTotalPrice - manualDiscount)
+        setTotalDiscount(tempSubTotal - (tempTotalPrice - manualDiscount))
+    }, [cart, discountType, discountValue])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -53,7 +68,7 @@ const Orderform = () => {
 
         const finalOrderData = {
             ...formData,
-            phone: formData.phone.trim() || '01900000000',
+            phone: formData.phone.trim(),
             sub_total: subTotal,
             total_discount: totalDiscount,
             total_price: totalPrice,
@@ -67,6 +82,43 @@ const Orderform = () => {
         try {
             const res = await axios.post('/api/order', finalOrderData, { withCredentials: true });
             toast.success(res.data.message);
+            
+            // Build formatting for print receipt
+            const orderForPrinting = {
+                id: res.data.orderId,
+                created_at: new Date(),
+                name: res.data.customerName || 'guest',
+                items: (cart?.items || []).map(item => {
+                    let title = item.title;
+                    if (item.selectedVariants) {
+                        const variantNames = Object.values(item.selectedVariants).map(v => v.value).join(', ');
+                        if (variantNames) {
+                            title += ` (${variantNames})`;
+                        }
+                    }
+                    return {
+                        title,
+                        price: item.price,
+                        discount: item.discount || 0,
+                        quantity: item.quantity
+                    };
+                }),
+                sub_total: subTotal,
+                total_discount: totalDiscount,
+                total_price: totalPrice,
+                delivery_method: formData.delivery_method,
+                table_no: formData.table_no || 'N/A',
+                payment_method: formData.payment_method,
+                payment_status: formData.payment_status || 'paid',
+                status: formData.status || 'confirmed'
+            };
+
+            // Trigger printing twice: Customer Copy & Kitchen Copy
+            generateReceipt({ ...orderForPrinting, receipt_type: 'Customer Copy' }, siteData);
+            setTimeout(() => {
+                generateReceipt({ ...orderForPrinting, receipt_type: 'Kitchen Copy' }, siteData);
+            }, 1000);
+
             setPopUp(false);
             clearCart();
         } catch (error) {
@@ -124,6 +176,41 @@ const Orderform = () => {
                             ))}
                         </div>
                         
+                        {/* Manual Discount Section */}
+                        <div className='w-full p-4 bg-gray-50 border border-gray-100 rounded-xl flex flex-col gap-3'>
+                            <p className='text-[10px] font-semibold uppercase tracking-widest text-gray-400'>Manual Discount</p>
+                            <div className='flex items-center gap-3'>
+                                <div className='flex bg-white border border-gray-200 rounded-lg p-0.5 shadow-sm'>
+                                    <button 
+                                        type='button' 
+                                        onClick={() => { setDiscountType('flat'); setDiscountValue(0); }}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase transition-all cursor-pointer ${discountType === 'flat' ? 'bg-pink-500 text-white shadow-xs' : 'text-gray-500 hover:text-gray-800'}`}
+                                    >
+                                        ৳ Flat
+                                    </button>
+                                    <button 
+                                        type='button' 
+                                        onClick={() => { setDiscountType('percent'); setDiscountValue(0); }}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase transition-all cursor-pointer ${discountType === 'percent' ? 'bg-pink-500 text-white shadow-xs' : 'text-gray-500 hover:text-gray-800'}`}
+                                    >
+                                        % Percent
+                                    </button>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    min="0"
+                                    max={discountType === 'percent' ? 100 : undefined}
+                                    value={discountValue || ''} 
+                                    onChange={(e) => {
+                                        const val = parseFloat(e.target.value) || 0;
+                                        setDiscountValue(val >= 0 ? val : 0);
+                                    }}
+                                    placeholder={discountType === 'percent' ? 'Discount %' : 'Discount ৳'}
+                                    className='flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none focus:border-pink-500 transition-all font-semibold text-sm'
+                                />
+                            </div>
+                        </div>
+
                         <div className='bg-pink-500 text-white p-5 rounded-xl w-full flex flex-col gap-3'>
                             <div className='space-y-1.5'>
                                 <div className='flex justify-between text-[10px] font-semibold uppercase tracking-widest opacity-50'>

@@ -50,7 +50,7 @@ export const generateReceipt = (order, siteData = {}) => {
         <div class="header">
           <p class="store-name">${siteData?.name || "Restaurant"}</p>
           <p class="store-contact">${siteData?.address || ""}</p>
-          <p class="receipt-type">— Sales Receipt —</p>
+          <p class="receipt-type">— ${order.receipt_type || "Sales Receipt"} —</p>
         </div>
 
         <div class="meta-section">
@@ -58,6 +58,7 @@ export const generateReceipt = (order, siteData = {}) => {
           <div class="meta-row"><span>Date</span><span class="meta-value">${formattedDate}</span></div>
           <div class="meta-row"><span>Time</span><span class="meta-value">${formattedTime}</span></div>
           <div class="meta-row"><span>Customer</span><span class="meta-value">${order.name}</span></div>
+          <div class="meta-row"><span>Status</span><span class="meta-value" style="text-transform: uppercase; font-weight: bold;">${order.status || 'confirmed'}</span></div>
         </div>
 
         <div class="items-header"><span>Description</span><span style="text-align:center">Qty</span><span style="text-align:right">Total</span></div>

@@ -53,6 +53,7 @@ const PrintOrder = ({ order }) => {
             <div>Customer: <span class="bold">${order.name || 'Guest'}</span></div>
             <div>Type: <span class="bold">${order.delivery_method?.toUpperCase()}</span></div>
             ${order.delivery_method === 'takein' ? `<div>Table: <span class="bold">${order.table_no}</span></div>` : ''}
+            <div>Status: <span class="bold" style="text-transform: uppercase;">${order.status || 'confirmed'}</span></div>
           </div>
 
           <table>

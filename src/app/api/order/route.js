@@ -76,25 +76,61 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Cart is empty" }, { status: 400 });
     }
 
-    const customerPhone = phone?.trim() || "01900000000";
+    const trimmedPhone = phone ? phone.trim() : "";
+    let customerPhone = trimmedPhone;
     let customerName = "guest";
+    const isPhoneEmpty = trimmedPhone === "";
 
     // Start transaction
     await client.query("BEGIN");
 
-    // 1. Handle Customer
-    const { rows: existingCustomer } = await client.query(
-      "SELECT name FROM restaurant_customers WHERE phone = $1 AND tenant_id = $2 LIMIT 1",
-      [customerPhone, tenant_id]
-    );
-
-    if (existingCustomer.length > 0) {
-      customerName = existingCustomer[0].name;
+    if (isPhoneEmpty) {
+      customerPhone = "temp_guest";
+      customerName = "guest";
     } else {
-      await client.query(
-        "INSERT INTO restaurant_customers (tenant_id, phone, name) VALUES ($1, $2, $3)",
-        [tenant_id, customerPhone, "guest"]
+      // 1. Check if user exists with the number in restaurant_users
+      const { rows: existingUser } = await client.query(
+        "SELECT name FROM restaurant_users WHERE phone = $1 AND tenant_id = $2 LIMIT 1",
+        [customerPhone, tenant_id]
       );
+
+      if (existingUser.length > 0) {
+        customerName = existingUser[0].name;
+        // Upsert customer record with user's name
+        const { rows: cust } = await client.query(
+          "SELECT id FROM restaurant_customers WHERE phone = $1 AND tenant_id = $2 LIMIT 1",
+          [customerPhone, tenant_id]
+        );
+        if (cust.length > 0) {
+          await client.query(
+            "UPDATE restaurant_customers SET name = $1 WHERE phone = $2 AND tenant_id = $3",
+            [customerName, customerPhone, tenant_id]
+          );
+        } else {
+          await client.query(
+            "INSERT INTO restaurant_customers (tenant_id, phone, name) VALUES ($1, $2, $3)",
+            [tenant_id, customerPhone, customerName]
+          );
+        }
+      } else {
+        // No registered user. Create or update customer record as guest
+        customerName = "guest";
+        const { rows: cust } = await client.query(
+          "SELECT id FROM restaurant_customers WHERE phone = $1 AND tenant_id = $2 LIMIT 1",
+          [customerPhone, tenant_id]
+        );
+        if (cust.length > 0) {
+          await client.query(
+            "UPDATE restaurant_customers SET name = $1 WHERE phone = $2 AND tenant_id = $3",
+            [customerName, customerPhone, tenant_id]
+          );
+        } else {
+          await client.query(
+            "INSERT INTO restaurant_customers (tenant_id, phone, name) VALUES ($1, $2, $3)",
+            [tenant_id, customerPhone, customerName]
+          );
+        }
+      }
     }
 
     const orderStatus = status || "pending";
@@ -123,6 +159,20 @@ export async function POST(req) {
     );
 
     const orderId = orderRows[0].id;
+
+    if (isPhoneEmpty) {
+      customerPhone = orderId.toString();
+      // Update order's phone with orderId
+      await client.query(
+        "UPDATE restaurant_orders SET phone = $1 WHERE id = $2 AND tenant_id = $3",
+        [customerPhone, orderId, tenant_id]
+      );
+      // Create guest customer record with phone set to orderId
+      await client.query(
+        "INSERT INTO restaurant_customers (tenant_id, phone, name) VALUES ($1, $2, $3)",
+        [tenant_id, customerPhone, "guest"]
+      );
+    }
 
     // 3. Insert Order Items
     for (const item of items) {
@@ -175,6 +225,7 @@ export async function POST(req) {
       success: true,
       message: `Order placed for ${customerName}`,
       orderId: orderId,
+      customerName: customerName,
     }, { status: 201 });
 
   } catch (error) {
